@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using DLS.Game;
-using DLS.Description;
 using Seb.Helpers;
 using Seb.Types;
 using Seb.Vis;
@@ -207,27 +206,6 @@ namespace DLS.Graphics
 
 			return true;
 		}
-		
-		static long TwosComplement(ulong value, int bitWidth)
-		{
-			if (bitWidth <= 0 || bitWidth > 64)
-				throw new ArgumentOutOfRangeException(nameof(bitWidth), "bitWidth must be between 1 and 64.");
-
-			// Create a mask for the specified bit width
-			ulong mask = (1UL << bitWidth) - 1;
-			value = value & mask; // Ensure value fits within bitWidth
-
-			// Check if the sign bit is set
-			ulong signBit = 1UL << (bitWidth - 1);
-			if ((value & signBit) != 0)
-			{
-				// If sign bit is set, convert to negative value
-				// Subtract 2^bitWidth to get the negative representation
-				return (long)value - (long)(1UL << bitWidth);
-			}
-			
-			return (long)value;
-		}
 
 		// Convert from uint to display string with given display mode
 		static string UIntToDisplayString(uint raw, DataDisplayMode displayFormat, int bitCount)
@@ -235,9 +213,9 @@ namespace DLS.Graphics
 			return displayFormat switch
 			{
 				DataDisplayMode.Binary => Convert.ToString(raw, 2).PadLeft(bitCount, '0'),
-				DataDisplayMode.DecimalSigned => TwosComplement(raw, bitCount).ToString(),
-				DataDisplayMode.DecimalUnsigned => raw.ToString(),
-				DataDisplayMode.HEX => raw.ToString("X").PadLeft((bitCount + 3) / 4, '0'), // Proper hex padding
+				DataDisplayMode.DecimalSigned => Maths.TwosComplement(raw, bitCount) + "",
+				DataDisplayMode.DecimalUnsigned => raw + "",
+				DataDisplayMode.HEX => raw.ToString("X").PadLeft(bitCount / 4, '0'),
 				_ => throw new NotImplementedException("Unsupported display format: " + displayFormat)
 			};
 		}
@@ -246,110 +224,64 @@ namespace DLS.Graphics
 		static uint DisplayStringToUInt(string displayString, DataDisplayMode stringFormat, int bitCount)
 		{
 			displayString = displayString.Replace(" ", string.Empty);
-			if (displayString == string.Empty)
-			{
-				return 0;
-			}
-			if (displayString.Length > bitCount)
-			{
-				displayString = displayString.Substring(0,bitCount-1);
-			}
-			
-			Debug.Log("Display " + displayString);
 			uint uintVal;
-			
+
 			switch (stringFormat)
 			{
 				case DataDisplayMode.Binary:
-					if (bitCount <= 32)
-					{
-						uintVal = Convert.ToUInt32(displayString, 2);
-					}
-					else
-					{
-						// For >32 bits, truncate to 32 bits
-						ulong value = Convert.ToUInt64(displayString, 2);
-						uintVal = (uint)(value & 0xFFFFFFFF);
-					}
+					uintVal = Convert.ToUInt32(displayString, 2);
 					break;
-					
 				case DataDisplayMode.DecimalSigned:
-					if (bitCount <= 32)
+				{
+					int signedValue = int.Parse(displayString);
+					uint unsignedRange = 1u << bitCount;
+					if (signedValue < 0)
 					{
-						int signedValue = int.Parse(displayString);
-						if (signedValue < 0)
-						{
-							// Convert negative signed value to unsigned representation
-							uintVal = (uint)(signedValue + (1L << bitCount));
-						}
-						else
-						{
-							uintVal = (uint)signedValue;
-						}
+						uintVal = (uint)(signedValue + unsignedRange);
 					}
 					else
 					{
-						// For >32 bits, still return uint (truncated)
-						long signedValue = long.Parse(displayString);
-						if (signedValue < 0)
-						{
-							uintVal = (uint)(signedValue + (1L << Math.Min(bitCount, 32)));
-						}
-						else
-						{
-							uintVal = (uint)signedValue;
-						}
+						uintVal = (uint)signedValue;
 					}
+
 					break;
-					
+				}
 				case DataDisplayMode.DecimalUnsigned:
-					if (bitCount <= 32)
-					{
-						uintVal = uint.Parse(displayString);
-					}
-					else
-					{
-						// Parse as ulong but truncate to uint
-						ulong value = ulong.Parse(displayString);
-						uintVal = (uint)(value & 0xFFFFFFFF);
-					}
+					uintVal = uint.Parse(displayString);
 					break;
-					
 				case DataDisplayMode.HEX:
-					if (bitCount <= 32)
-					{
-						uintVal = Convert.ToUInt32(displayString, 16);
-					}
-					else
-					{
-						ulong value = Convert.ToUInt64(displayString, 16);
-						uintVal = (uint)(value & 0xFFFFFFFF);
-					}
+					int value = Convert.ToInt32(displayString, 16);
+					uintVal = (uint)value;
 					break;
-					
 				default:
 					throw new NotImplementedException("Unsupported display format: " + stringFormat);
 			}
 
-			Debug.Log(uintVal);
 			return uintVal;
 		}
 
 		static bool TryParseDisplayStringToUInt(string displayString, DataDisplayMode stringFormat, int bitCount, out uint raw)
 		{
-			raw = DisplayStringToUInt(displayString, stringFormat, bitCount);
-			long maxVal = (long) Math.Pow(2,bitCount) - 1;
-			uint max = (uint) maxVal;
-
-			// If value is too large to fit in given bit-count, clamp the result and return failure
-			// (note: maybe makes more sense to wrap the result, but I think it's more obvious to player what happened if it just clamps)
-			if (raw > max)
+			try
 			{
-				raw = max;
+				raw = DisplayStringToUInt(displayString, stringFormat, bitCount);
+				uint maxVal = (1u << bitCount) - 1;
+
+				// If value is too large to fit in given bit-count, clamp the result and return failure
+				// (note: maybe makes more sense to wrap the result, but I think it's more obvious to player what happened if it just clamps)
+				if (raw > maxVal)
+				{
+					raw = maxVal;
+					return false;
+				}
+
+				return true;
+			}
+			catch (Exception)
+			{
+				raw = 0;
 				return false;
 			}
-
-			return true;
 		}
 
 		static void SaveChangesToROM()
@@ -409,14 +341,7 @@ namespace DLS.Graphics
 		{
 			romChip = (SubChipInstance)ContextMenu.interactionContext;
 			RowCount = romChip.InternalData.Length;
-			ActiveRomDataBitCount = romChip.ChipType switch
-			{
-				ChipType.Rom_256x2x8 => 16,
-				ChipType.Rom_256x16 => 16,
-				ChipType.Rom_256x32 => 32,
-				_ => 16
-			};
-
+			ActiveRomDataBitCount = 16; //
 
 			ID_DataDisplayMode = new UIHandle("ROM_DataDisplayMode", romChip.ID);
 			ID_scrollbar = new UIHandle("ROM_EditScrollbar", romChip.ID);

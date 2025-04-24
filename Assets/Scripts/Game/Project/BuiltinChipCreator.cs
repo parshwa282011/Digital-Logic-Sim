@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
 using UnityEngine;
 using static DLS.Graphics.DrawSettings;
@@ -21,8 +22,6 @@ namespace DLS.Game
 				CreateInputOrOutputPin(ChipType.Out_4Bit),
 				CreateInputOrOutputPin(ChipType.In_8Bit),
 				CreateInputOrOutputPin(ChipType.Out_8Bit),
-				CreateInputOrOutputPin(ChipType.In_16Bit),
-				CreateInputOrOutputPin(ChipType.Out_16Bit),
 				CreateInputKeyChip(),
 				// ---- Basic Chips ----
 				CreateNand(),
@@ -31,31 +30,20 @@ namespace DLS.Game
 				CreatePulse(),
 				// ---- Memory ----
 				dev_CreateRAM_8(),
-				CreateROM(ChipType.Rom_256x2x8),
-				CreateROM(ChipType.Rom_256x16),
-				CreateROM(ChipType.Rom_256x32),
+				CreateROM_8(),
 				// ---- Merge / Split ----
 				CreateBitConversionChip(ChipType.Split_4To1Bit, PinBitCount.Bit4, PinBitCount.Bit1, 1, 4),
 				CreateBitConversionChip(ChipType.Split_8To4Bit, PinBitCount.Bit8, PinBitCount.Bit4, 1, 2),
 				CreateBitConversionChip(ChipType.Split_8To1Bit, PinBitCount.Bit8, PinBitCount.Bit1, 1, 8),
-				CreateBitConversionChip(ChipType.Split_16To1Bit, PinBitCount.Bit16, PinBitCount.Bit1, 1, 16),
-				CreateBitConversionChip(ChipType.Split_16To4Bit, PinBitCount.Bit16, PinBitCount.Bit4, 1, 4),
-				CreateBitConversionChip(ChipType.Split_16To8Bit, PinBitCount.Bit16, PinBitCount.Bit8, 1, 2),
 
 				CreateBitConversionChip(ChipType.Merge_1To8Bit, PinBitCount.Bit1, PinBitCount.Bit8, 8, 1),
 				CreateBitConversionChip(ChipType.Merge_1To4Bit, PinBitCount.Bit1, PinBitCount.Bit4, 4, 1),
 				CreateBitConversionChip(ChipType.Merge_4To8Bit, PinBitCount.Bit4, PinBitCount.Bit8, 2, 1),
-				CreateBitConversionChip(ChipType.Merge_1To16Bit, PinBitCount.Bit1, PinBitCount.Bit16, 16, 1),
-				CreateBitConversionChip(ChipType.Merge_4To16Bit, PinBitCount.Bit4, PinBitCount.Bit16, 4, 1),
-				CreateBitConversionChip(ChipType.Merge_8To16Bit, PinBitCount.Bit8, PinBitCount.Bit16, 2, 1),
-
 				// ---- Displays ----
 				CreateDisplay7Seg(),
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
 				CreateDisplayLED(),
-				CreateDisplayRGBLED(),
-				CreateDisplayUTF16Bit(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -63,48 +51,12 @@ namespace DLS.Game
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
 				CreateBusTerminus(PinBitCount.Bit8),
-				CreateBus(PinBitCount.Bit16),
-				CreateBusTerminus(PinBitCount.Bit16),
 				// ---- Audio ----
-				CreateBuzzer(),
-				CreatePortIn(PinBitCount.Bit1),
-				CreatePortIn(PinBitCount.Bit4),
-				CreatePortIn(PinBitCount.Bit8),
-				CreatePortIn(PinBitCount.Bit16),
-				CreatePortOut(PinBitCount.Bit1),
-				CreatePortOut(PinBitCount.Bit4),
-				CreatePortOut(PinBitCount.Bit8),
-				CreatePortOut(PinBitCount.Bit16),
-				CreateComplexChip(),
+				CreateBuzzer()
 			};
 		}
 
-		static ChipDescription CreateComplexChip()
-		{
-			Color col = new(0.1f, 0.1f, 0.1f);
-
-			PinDescription[] inputPins =
-			{
-				CreatePinDescription("Clock", 0),
-				CreatePinDescription("IP 1", 1, PinBitCount.Bit16),
-				CreatePinDescription("IP 2", 2, PinBitCount.Bit16),
-				CreatePinDescription("IP 3", 3, PinBitCount.Bit16),
-				CreatePinDescription("IP 4", 4, PinBitCount.Bit16),
-				CreatePinDescription("PORT", 5, PinBitCount.Bit16),
-				CreatePinDescription("DATA 1", 6, PinBitCount.Bit16),
-				CreatePinDescription("DATA 2", 7, PinBitCount.Bit16),
-				CreatePinDescription("SEND", 8)
-			};
-
-			PinDescription[] outputPins = { CreatePinDescription("DATA", 9, PinBitCount.Bit16),
-			CreatePinDescription("ISDATA?", 10, PinBitCount.Bit16) };
-
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
-
-			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 9), height);
-
-			return CreateBuiltinChipDescription(ChipType.Complex_Internet_Interface, size, col, inputPins, outputPins, null, NameDisplayLocation.Hidden);
-		}
+		
 
 		static ChipDescription CreateNand()
 		{
@@ -151,76 +103,22 @@ namespace DLS.Game
 			return CreateBuiltinChipDescription(ChipType.dev_Ram_8Bit, size, col, inputPins, outputPins);
 		}
 
-		static ChipDescription CreateROM(ChipType type)
+		static ChipDescription CreateROM_8()
 		{
-			switch(type){
-				case ChipType.Rom_256x2x8:
-				{
-					PinDescription[] inputPins =
-					{
-						CreatePinDescription("ADDRESS", 0, PinBitCount.Bit8)
-					};
-					PinDescription[] outputPins =
-					{
-						CreatePinDescription("OUT B", 1, PinBitCount.Bit8),
-						CreatePinDescription("OUT A", 2, PinBitCount.Bit8)
-					};
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("ADDRESS", 0, PinBitCount.Bit8)
+			};
+			PinDescription[] outputPins =
+			{
+				CreatePinDescription("OUT B", 1, PinBitCount.Bit8),
+				CreatePinDescription("OUT A", 2, PinBitCount.Bit8)
+			};
 
-					Color col = new(0.25f, 0.35f, 0.5f);
-					Vector2 size = new(GridSize * 12, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+			Color col = new(0.25f, 0.35f, 0.5f);
+			Vector2 size = new(GridSize * 12, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
 
-					return CreateBuiltinChipDescription(ChipType.Rom_256x2x8, size, col, inputPins, outputPins);
-				}
-				case ChipType.Rom_256x16:
-				{
-					PinDescription[] inputPins =
-					{
-						CreatePinDescription("ADDRESS", 0, PinBitCount.Bit8)
-					};
-					PinDescription[] outputPins =
-					{
-						CreatePinDescription("OUT A", 1, PinBitCount.Bit16)
-					};
-
-					Color col = new(0.25f, 0.35f, 0.5f);
-					Vector2 size = new(GridSize * 12, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
-
-					return CreateBuiltinChipDescription(ChipType.Rom_256x16, size, col, inputPins, outputPins);
-				}
-				case ChipType.Rom_256x32:
-				{
-					PinDescription[] inputPins =
-					{
-						CreatePinDescription("ADDRESS", 0, PinBitCount.Bit8)
-					};
-					PinDescription[] outputPins =
-					{
-						CreatePinDescription("OUT B", 1, PinBitCount.Bit16),
-						CreatePinDescription("OUT A", 2, PinBitCount.Bit16)
-					};
-
-					Color col = new(0.25f, 0.35f, 0.5f);
-					Vector2 size = new(GridSize * 12, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
-
-					return CreateBuiltinChipDescription(ChipType.Rom_256x32, size, col, inputPins, outputPins);
-				}
-				default:
-				{
-					PinDescription[] inputPins =
-					{
-						CreatePinDescription("ADDRESS", 0, PinBitCount.Bit8)
-					};
-					PinDescription[] outputPins =
-					{
-						CreatePinDescription("OUT A", 1, PinBitCount.Bit16)
-					};
-
-					Color col = new(0.25f, 0.35f, 0.5f);
-					Vector2 size = new(GridSize * 12, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
-
-					return CreateBuiltinChipDescription(ChipType.Rom_256x16, size, col, inputPins, outputPins);
-				}
-			}
+			return CreateBuiltinChipDescription(ChipType.Rom_256x16, size, col, inputPins, outputPins);
 		}
 
 		static ChipDescription CreateInputKeyChip()
@@ -327,30 +225,30 @@ namespace DLS.Game
 
 		static ChipDescription CreateDisplayRGB()
 		{
-			float displayWidth = GridSize * 19;
+			float height = GridSize * 21;
+			float width = height;
+			float displayWidth = height - GridSize * 2;
 
 			Color col = new(0.1f, 0.1f, 0.1f);
+			Vector2 size = new(width, height);
 
 			PinDescription[] inputPins =
 			{
 				CreatePinDescription("ADDRESS", 0, PinBitCount.Bit8),
-				CreatePinDescription("RED", 1, PinBitCount.Bit8),
-				CreatePinDescription("GREEN", 2, PinBitCount.Bit8),
-				CreatePinDescription("BLUE", 3, PinBitCount.Bit8),
+				CreatePinDescription("RED", 1, PinBitCount.Bit4),
+				CreatePinDescription("GREEN", 2, PinBitCount.Bit4),
+				CreatePinDescription("BLUE", 3, PinBitCount.Bit4),
 				CreatePinDescription("RESET", 4),
 				CreatePinDescription("WRITE", 5),
 				CreatePinDescription("REFRESH", 6),
 				CreatePinDescription("CLOCK", 7)
 			};
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
-			float width = height;
-			Vector2 size = new(width, height);
 
 			PinDescription[] outputPins =
 			{
-				CreatePinDescription("R OUT", 8, PinBitCount.Bit8),
-				CreatePinDescription("G OUT", 9, PinBitCount.Bit8),
-				CreatePinDescription("B OUT", 10, PinBitCount.Bit8)
+				CreatePinDescription("R OUT", 8, PinBitCount.Bit4),
+				CreatePinDescription("G OUT", 9, PinBitCount.Bit4),
+				CreatePinDescription("B OUT", 10, PinBitCount.Bit4)
 			};
 
 			DisplayDescription[] displays =
@@ -424,7 +322,6 @@ namespace DLS.Game
 				PinBitCount.Bit1 => new Vector2(GridSize * 2, GridSize * 2),
 				PinBitCount.Bit4 => new Vector2(GridSize * 2, GridSize * 3),
 				PinBitCount.Bit8 => new Vector2(GridSize * 2, GridSize * 4),
-				PinBitCount.Bit16 => new Vector2(GridSize * 2, GridSize * 5),
 				_ => throw new Exception("Bus bit count not implemented")
 			};
 		}
@@ -436,7 +333,6 @@ namespace DLS.Game
 				PinBitCount.Bit1 => ChipType.Bus_1Bit,
 				PinBitCount.Bit4 => ChipType.Bus_4Bit,
 				PinBitCount.Bit8 => ChipType.Bus_8Bit,
-				PinBitCount.Bit16 => ChipType.Bus_16Bit,
 				_ => throw new Exception("Bus bit count not implemented")
 			};
 
@@ -449,66 +345,7 @@ namespace DLS.Game
 
 			return CreateBuiltinChipDescription(type, BusChipSize(bitCount), col, inputs, outputs, null, NameDisplayLocation.Hidden);
 		}
-		static ChipDescription CreateDisplayRGBLED()
-		{
-			PinDescription[] inputPins =
-			{
-				CreatePinDescription("IN", 0),
-				CreatePinDescription("RED", 1, PinBitCount.Bit8),
-				CreatePinDescription("GREEN", 2, PinBitCount.Bit8),
-				CreatePinDescription("BLUE", 3, PinBitCount.Bit8),
-			};
 
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
-			float width = height;
-			float displayWidth = height - GridSize * 0.5f;
-
-			Color col = new(0.1f, 0.1f, 0.1f);
-			Vector2 size = new(width, height);
-
-
-			DisplayDescription[] displays =
-			{
-				new()
-				{
-					Position = Vector2.zero,
-					Scale = displayWidth,
-					SubChipID = -1
-				}
-			};
-
-			return CreateBuiltinChipDescription(ChipType.DisplayRGBLED, size, col, inputPins, null, displays, NameDisplayLocation.Hidden);
-		}
-
-		static ChipDescription CreateDisplayUTF16Bit()
-		{
-			PinDescription[] inputPins =
-			{
-				CreatePinDescription("ON", 0),
-				CreatePinDescription("Address", 1, PinBitCount.Bit4),
-				CreatePinDescription("Letter", 2, PinBitCount.Bit16)
-			};
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
-			float width = height * 2.5f;
-			float displayWidth = width - GridSize * 0.5f;
-
-			Color col = new(0f, 0f, 0f);
-			Vector2 size = new(width, height);
-
-
-			DisplayDescription[] displays =
-			{
-				new()
-				{
-					Position = Vector2.zero,
-					Scale = displayWidth,
-					SubChipID = -1
-				}
-			};
-
-			return CreateBuiltinChipDescription(ChipType.DisplayUTF, size, col, inputPins, null, displays, NameDisplayLocation.Hidden);
-		}
-		
 		static ChipDescription CreateDisplayLED()
 		{
 			PinDescription[] inputPins =
@@ -545,7 +382,6 @@ namespace DLS.Game
 				PinBitCount.Bit1 => ChipType.BusTerminus_1Bit,
 				PinBitCount.Bit4 => ChipType.BusTerminus_4Bit,
 				PinBitCount.Bit8 => ChipType.BusTerminus_8Bit,
-				PinBitCount.Bit16 => ChipType.BusTerminus_16Bit,
 				_ => throw new Exception("Bus bit count not implemented")
 			};
 
@@ -556,7 +392,7 @@ namespace DLS.Game
 		}
 
 
-		public static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs, PinDescription[] outputs, DisplayDescription[] displays = null, NameDisplayLocation nameLoc = NameDisplayLocation.Centre)
+		static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs, PinDescription[] outputs, DisplayDescription[] displays = null, NameDisplayLocation nameLoc = NameDisplayLocation.Centre)
 		{
 			string name = ChipTypeHelper.GetName(type);
 			ValidatePinIDs(inputs, outputs, name);
@@ -576,7 +412,7 @@ namespace DLS.Game
 			};
 		}
 
-		public static PinDescription CreatePinDescription(string name, int id, PinBitCount bitCount = PinBitCount.Bit1) =>
+		static PinDescription CreatePinDescription(string name, int id, PinBitCount bitCount = PinBitCount.Bit1) =>
 			new(
 				name,
 				id,
@@ -609,46 +445,6 @@ namespace DLS.Game
 					}
 				}
 			}
-		}
-
-		static ChipDescription CreatePortIn(PinBitCount bitCount)
-		{
-			ChipType type = bitCount switch
-			{
-				PinBitCount.Bit1 => ChipType.PortIn_1Bit,
-				PinBitCount.Bit4 => ChipType.PortIn_4Bit,
-				PinBitCount.Bit8 => ChipType.PortIn_8Bit,
-				PinBitCount.Bit16 => ChipType.PortIn_16Bit,
-				_ => throw new Exception("Port In bit count not implemented")
-			};
-			string name = $"PORT-IN-{(int)bitCount}";
-			PinDescription[] outputPins = { CreatePinDescription("OUT", 0, bitCount) };
-
-			Color col = new(0f, 1f, 0f);
-			Vector2 size = new(2.1f, 0.7f);
-
-			return CreateBuiltinChipDescription(type, size, col, null, outputPins, null);
-		}
-
-		static ChipDescription CreatePortOut(PinBitCount bitCount)
-		{
-			ChipType type = bitCount switch
-			{
-				PinBitCount.Bit1 => ChipType.PortOut_1Bit,
-				PinBitCount.Bit4 => ChipType.PortOut_4Bit,
-				PinBitCount.Bit8 => ChipType.PortOut_8Bit,
-				PinBitCount.Bit16 => ChipType.PortOut_16Bit,
-				_ => throw new Exception("Port Out bit count not implemented")
-			};
-			string name = $"PORT-OUT-{(int)bitCount}";
-			PinDescription[] inputPins = { CreatePinDescription("IN", 0, bitCount) };
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
-			float width = height;
-
-			Color col = new(0f, 1f, 0f);
-			Vector2 size = new(2.1f, 0.7f);
-
-			return CreateBuiltinChipDescription(type, size, col, inputPins, null, null);
 		}
 	}
 }

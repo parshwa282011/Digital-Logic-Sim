@@ -233,11 +233,13 @@ namespace DLS.Game
 
 		static DisplayInstance CreateDisplayInstance(DisplayDescription displayDesc, ChipDescription chipDesc)
 		{
-			DisplayInstance instance = new();
-			instance.Desc = displayDesc;
-			instance.DisplayType = chipDesc.ChipType;
+            DisplayInstance instance = new()
+            {
+                Desc = displayDesc,
+                DisplayType = chipDesc.ChipType
+            };
 
-			if (chipDesc.ChipType == ChipType.Custom)
+            if (chipDesc.ChipType == ChipType.Custom)
 			{
 				ChipDescription childDesc = GetDescriptionOfDisplayedSubChip(chipDesc, displayDesc.SubChipID);
 				instance.ChildDisplays = CreateDisplayInstances(childDesc);
@@ -309,7 +311,6 @@ namespace DLS.Game
 				PinBitCount.Bit1 => DrawSettings.PinRadius * 2,
 				PinBitCount.Bit4 => DrawSettings.PinHeight4Bit,
 				PinBitCount.Bit8 => DrawSettings.PinHeight8Bit,
-				PinBitCount.Bit16 => DrawSettings.PinHeight16Bit,
 				_ => throw new Exception("Bit count not implemented " + bitCount)
 			};
 		}

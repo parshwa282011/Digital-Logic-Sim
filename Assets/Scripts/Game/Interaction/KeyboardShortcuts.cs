@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using DLS.ModdingAPI;
 using Seb.Helpers;
 using UnityEngine;
 
@@ -29,8 +31,8 @@ namespace DLS.Game
 
 		// ---- Single key shortcuts ----
 		public static bool CancelShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Escape);
-		public static bool ConfirmShortcutTriggered => (InputHelper.IsKeyDownThisFrame(KeyCode.Return) || InputHelper.IsKeyDownThisFrame(KeyCode.KeypadEnter)) && InputHelper.ShiftIsHeld;
-		public static bool DeleteShortcutTriggered => (InputHelper.IsKeyDownThisFrame(KeyCode.Backspace) || InputHelper.IsKeyDownThisFrame(KeyCode.Delete)) && InputHelper.ShiftIsHeld;
+		public static bool ConfirmShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Return) || InputHelper.IsKeyDownThisFrame(KeyCode.KeypadEnter);
+		public static bool DeleteShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Backspace) || InputHelper.IsKeyDownThisFrame(KeyCode.Delete);
 		public static bool SimNextStepShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Space) && !InputHelper.CtrlIsHeld;
 		public static bool SimPauseToggleShortcutTriggered => CtrlShortcutTriggered(KeyCode.Space);
 
@@ -51,5 +53,20 @@ namespace DLS.Game
 		static bool CtrlShortcutTriggered(KeyCode key) => InputHelper.IsKeyDownThisFrame(key) && InputHelper.CtrlIsHeld && !(InputHelper.AltIsHeld || InputHelper.ShiftIsHeld);
 		static bool CtrlShiftShortcutTriggered(KeyCode key) => InputHelper.IsKeyDownThisFrame(key) && InputHelper.CtrlIsHeld && InputHelper.ShiftIsHeld && !(InputHelper.AltIsHeld);
 		static bool ShiftShortcutTriggered(KeyCode key) => InputHelper.IsKeyDownThisFrame(key) && InputHelper.ShiftIsHeld && !(InputHelper.AltIsHeld || InputHelper.CtrlIsHeld);
+
+		// ---- Modded shortcuts ----
+		public static bool GetModdedShortcut(string shortcutName)
+        {
+            if (Registry.ModdedShortcuts.TryGetValue(shortcutName, out var shortcut))
+            {
+                bool keyTriggered = InputHelper.IsKeyDownThisFrame(shortcut.Key);
+                bool modifierConditionMet = shortcut.ModifierCondition?.Invoke() ?? true;
+
+                return keyTriggered && modifierConditionMet;
+            }
+
+            Debug.LogWarning($"Shortcut '{shortcutName}' is not registered.");
+            return false;
+        }
 	}
 }

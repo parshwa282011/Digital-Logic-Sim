@@ -20,6 +20,8 @@ namespace DLS.Simulation
 		public SimPin[] OutputPins = Array.Empty<SimPin>();
 		public SimChip[] SubChips = Array.Empty<SimChip>();
 
+		public ChipDescription Description {get; private set;}
+
 
 		public SimChip()
 		{
@@ -32,11 +34,12 @@ namespace DLS.Simulation
 			ID = id;
 			ChipType = desc.ChipType;
 			IsBuiltin = ChipType != ChipType.Custom;
+			Description = desc;
 
 			// ---- Create pins (don't allocate unnecessarily as very many sim chips maybe created!) ----
 			if (desc.InputPins.Length > 0)
 			{
-				InputPins = new SimPin[desc.InputPins.Length];
+				InputPins = new SimPin [desc.InputPins.Length];
 				for (int i = 0; i < InputPins.Length; i++)
 				{
 					InputPins[i] = CreateSimPinFromDescription(desc.InputPins[i], true, this);
@@ -45,7 +48,7 @@ namespace DLS.Simulation
 
 			if (desc.OutputPins.Length > 0)
 			{
-				OutputPins = new SimPin[desc.OutputPins.Length];
+				OutputPins = new SimPin [desc.OutputPins.Length];
 				for (int i = 0; i < OutputPins.Length; i++)
 				{
 					OutputPins[i] = CreateSimPinFromDescription(desc.OutputPins[i], false, this);
@@ -59,10 +62,6 @@ namespace DLS.Simulation
 			{
 				// first 256 bits = display buffer, next 256 bits = back buffer, last bit = clock state (to allow edge-trigger behaviour)
 				InternalState = new uint[addressSize_8Bit * 2 + 1];
-			}
-			else if (ChipType is ChipType.DisplayRGBLED)
-			{
-				InternalState = new uint[3];
 			}
 			else if (ChipType is ChipType.DisplayDot)
 			{
@@ -80,14 +79,6 @@ namespace DLS.Simulation
 					Simulator.rng.NextBytes(randomBytes);
 					InternalState[i] = BitConverter.ToUInt32(randomBytes);
 				}
-			}
-			else if (ChipType is ChipType.DisplayUTF)
-			{
-				InternalState = new uint[16];
-			}
-			else if (ChipType is ChipType.Complex_Internet_Interface)
-			{
-				InternalState = new uint[4 + 1 + 1000]; // 4 for ip, 1 for port, 1000 for response buffer
 			}
 			// Load in serialized persistent state (rom data, etc.)
 			else if (internalState is { Length: > 0 })

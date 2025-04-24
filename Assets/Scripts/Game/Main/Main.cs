@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DLS.Description;
 using DLS.Graphics;
+using DLS.Mods;
 using DLS.SaveSystem;
 using UnityEngine;
 
@@ -24,6 +25,8 @@ namespace DLS.Game
 		public static void Init(AudioState audioState)
 		{
 			SavePaths.EnsureDirectoryExists(SavePaths.ProjectsPath);
+			SavePaths.EnsureDirectoryExists(SavePaths.ModsPath);
+			ModLoader.InitializeMods(SavePaths.ModsPath);
 			SaveAndApplyAppSettings(Loader.LoadAppSettings());
 			Main.audioState = audioState;
 		}
@@ -59,9 +62,6 @@ namespace DLS.Game
 
 		public static void LoadMainMenu()
 		{
-			// Stop port servers when returning to main menu
-			DLS.External.PortHttpServer.Stop();
-			DLS.External.PortSocketServer.Stop();
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.MainMenu);
 		}
 
@@ -71,11 +71,9 @@ namespace DLS.Game
 			else ActiveProject = CreateProject(projectName);
 
 			ActiveProject.LoadDevChipOrCreateNewIfDoesntExist(startupChipName);
+
 			ActiveProject.StartSimulation();
 			ActiveProject.audioState = audioState;
-			// Start port servers when project is loaded
-			DLS.External.PortHttpServer.StartBoth();
-			DLS.External.PortSocketServer.StartBoth();
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
 

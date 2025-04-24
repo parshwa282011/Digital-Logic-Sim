@@ -188,7 +188,6 @@ namespace Seb.Vis
 
 			static void LoadDefaultFonts()
 			{
-				defaultFontsData = null;
 				if (defaultFontsData == null || defaultFontsData.Length != FontMap.map.Length)
 				{
 					defaultFontsData = new FontData[FontMap.map.Length];

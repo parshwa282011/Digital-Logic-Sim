@@ -20,14 +20,23 @@ namespace DLS.Description
 			Colour = colour;
 			ValueDisplayMode = valueDisplayMode;
 		}
+
+		public PinDescription(string name, int id)
+		{
+			Name = name;
+			ID = id;
+			Position = Vector2.zero;
+			BitCount = PinBitCount.Bit1;
+			Colour = PinColour.Red;
+			ValueDisplayMode = PinValueDisplayMode.Off;
+		}
 	}
 
 	public enum PinBitCount
 	{
 		Bit1 = 1,
 		Bit4 = 4,
-		Bit8 = 8,
-		Bit16 = 16
+		Bit8 = 8
 	}
 
 	public enum PinColour

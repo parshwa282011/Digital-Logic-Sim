@@ -1,5 +1,4 @@
 using DLS.Game;
-using DLS.Simulation;
 using Seb.Helpers;
 using Seb.Vis;
 using Seb.Vis.UI;
@@ -9,6 +8,7 @@ namespace DLS.Graphics
 {
 	public static class RebindKeyChipMenu
 	{
+		public const string allowedChars = "1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
 		static SubChipInstance keyChip;
 		static string chosenKey;
 
@@ -25,10 +25,13 @@ namespace DLS.Graphics
 				if (InputHelper.AnyKeyOrMouseDownThisFrame && !string.IsNullOrEmpty(InputHelper.InputStringThisFrame))
 				{
 					char activeChar = char.ToUpper(InputHelper.InputStringThisFrame[0]);
-					chosenKey = activeChar.ToString();
+					if (allowedChars.Contains(activeChar))
+					{
+						chosenKey = activeChar.ToString();
+					}
 				}
 
-				UI.DrawText("Press a key to rebind", theme.FontBold, theme.FontSizeRegular, pos, Anchor.TextCentre, Color.white * 0.8f);
+				UI.DrawText("Press a key to rebind\n (alphanumeric only)", theme.FontBold, theme.FontSizeRegular, pos, Anchor.TextCentre, Color.white * 0.8f);
 
 				UI.DrawPanel(UI.PrevBounds.CentreBottom + Vector2.down, Vector2.one * 3.5f, new Color(0.1f, 0.1f, 0.1f), Anchor.CentreTop);
 				UI.DrawText(chosenKey, theme.FontBold, theme.FontSizeRegular * 1.5f, UI.PrevBounds.Centre, Anchor.TextCentre, Color.white);

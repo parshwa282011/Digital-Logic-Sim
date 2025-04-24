@@ -5,11 +5,14 @@ using System.Linq;
 using System.Threading;
 using DLS.Description;
 using DLS.Graphics;
+using DLS.ModdingAPI;
+using DLS.Mods;
 using DLS.SaveSystem;
 using DLS.Simulation;
 using Seb.Helpers;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using PinDescription = DLS.Description.PinDescription;
 
 namespace DLS.Game
 {
@@ -258,7 +261,11 @@ namespace DLS.Game
 			{
 				CreateBlankDevChip();
 			}
-			RegisterAllPortLabelsWithHttpServer();
+
+			ModLoader.NotifyMods((mod, args) => mod.OnProjectLoad(args), new IMod.ProjectEventArgs
+			{
+				ProjectName = this.description.ProjectName
+			});
 		}
 
 		void SetNewActiveDevChip(DevChipInstance devChip)
@@ -343,6 +350,32 @@ namespace DLS.Game
 				{
 					ViewedChip.RebuildSimulation();
 				}
+			}
+		}
+
+		public void DeleteModdedChip(ChipDescription chipToDelete)
+		{
+			bool simReloadRequired = ChipContainsSubchipIndirectly(ViewedChip, chipToDelete.Name);
+
+			if (ChipContainsSubChipDirectly(ViewedChip, chipToDelete.Name))
+			{
+				ViewedChip.UndoController.Clear();
+			}
+
+			ModdedChipCreator.ModdedChips.RemoveAll(chip => ChipDescription.NameMatch(chip.Name, chipToDelete.Name));
+
+			// Delete chip save file, remove from library, and update project description
+			UpdateAndSaveAffectedChips(chipToDelete, null, true);
+			chipLibrary.RemoveChip(chipToDelete.Name); 
+			EnsureChipRemovedFromCollections(chipToDelete.Name);
+			SetStarred(chipToDelete.Name, false, false, false); // ensure removed from starred list
+			UpdateAndSaveProjectDescription();
+
+			// Remove any instances of the deleted chip from the active chip
+			ViewedChip.DeleteSubchipsByName(chipToDelete.Name);
+			if (simReloadRequired)
+			{
+				ViewedChip.RebuildSimulation();
 			}
 		}
 
@@ -484,7 +517,19 @@ namespace DLS.Game
 
 		public void NotifyExit()
 		{
+			ModLoader.NotifyMods((mod, args) => mod.OnProjectUnload(args), new IMod.ProjectEventArgs
+			{
+				ProjectName = description.ProjectName
+			});
+
 			simThreadActive = false;
+
+			// List<ChipDescription> moddedChipsCopy = new(ModdedChipCreator.ModdedChips);
+			// foreach (ChipDescription chip in moddedChipsCopy)
+			// {
+				
+			// 	DeleteModdedChip(chip);
+			// }			
 		}
 
 		void SimThread()
@@ -688,20 +733,6 @@ namespace DLS.Game
 						collection.Chips.RemoveAt(i);
 						return;
 					}
-				}
-			}
-		}
-
-		// Register all PortIn/PortOut subchip labels with the HTTP server for the current DevChipInstance
-		void RegisterAllPortLabelsWithHttpServer()
-		{
-			var devChip = editModeChip;
-			foreach (var subchip in devChip.GetSubchips())
-			{
-				if (DLS.Description.ChipTypeHelper.IsPortChip(subchip.ChipType))
-				{
-					string label = string.IsNullOrEmpty(subchip.Label) ? subchip.Description.Name : subchip.Label;
-					DLS.External.PortHttpServer.SetPortName((uint)subchip.ID, label);
 				}
 			}
 		}

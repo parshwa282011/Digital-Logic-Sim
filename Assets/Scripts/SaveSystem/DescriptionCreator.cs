@@ -27,6 +27,19 @@ namespace DLS.SaveSystem
 			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
 			size = Vector2.Max(minChipsSize, size);
 
+			// Update DependsOnModIDs if any subchip is a modded chip
+            List<string> dependsOnModIDs = new();
+            foreach (var subchip in chip.GetSubchips())
+            {
+                if (subchip.Description.DependsOnModIDs != null && subchip.Description.DependsOnModIDs.Count != 0)
+                {
+                    dependsOnModIDs.AddRange(subchip.Description.DependsOnModIDs);
+                }
+            }
+
+            // Remove duplicates
+            dependsOnModIDs = dependsOnModIDs.Distinct().ToList();
+
 			UpdateWireIndicesForDescriptionCreation(chip);
 
 			// Create and return the chip description
@@ -43,7 +56,8 @@ namespace DLS.SaveSystem
 				OutputPins = outputPins,
 				Wires = chip.Wires.Select(CreateWireDescription).ToArray(),
 				Displays = displays,
-				ChipType = ChipType.Custom
+				ChipType = ChipType.Custom,
+				DependsOnModIDs = dependsOnModIDs
 			};
 		}
 
@@ -69,17 +83,6 @@ namespace DLS.SaveSystem
 
 		public static SubChipDescription CreateBuiltinSubChipDescriptionForPlacement(ChipType type, string name, int id, Vector2 position)
 		{
-			int ROMStorage = 256;
-			uint[] internalData = type switch
-			{
-				ChipType.Rom_256x2x8 => new uint[ROMStorage],
-				ChipType.Rom_256x16 => new uint[ROMStorage],
-				ChipType.Rom_256x32 => new uint[ROMStorage],
-				ChipType.Key => new uint[] { 'K' },
-				ChipType.Pulse => new uint[] { 50, 0, 0 },
-				ChipType.DisplayUTF => new uint[16] { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32 },
-				_ => ChipTypeHelper.IsBusType(type) ? new uint[2] : null
-			};
 			return new SubChipDescription
 			(
 				name,
@@ -95,10 +98,7 @@ namespace DLS.SaveSystem
 		{
 			return type switch
 			{
-				ChipType.DisplayUTF => new uint[16], // ammount of chars
-				ChipType.Rom_256x2x8 => new uint[256], // ROM contents
 				ChipType.Rom_256x16 => new uint[256], // ROM contents
-				ChipType.Rom_256x32 => new uint[256], // ROM contents
 				ChipType.Key => new uint[] { 'K' }, // Key binding
 				ChipType.Pulse => new uint[] { 50, 0, 0 }, // Pulse width, ticks remaining, input state old
 				ChipType.DisplayLED => new uint[] { 0 }, // LED colour
