@@ -404,6 +404,7 @@ namespace DLS.Simulation
 				}
 				case ChipType.Split_16To4Bit:
 				{
+					
 					SimPin in16 = chip.InputPins[0];
 					SimPin out4A = chip.OutputPins[0];
 					SimPin out4B = chip.OutputPins[1];
@@ -420,8 +421,8 @@ namespace DLS.Simulation
 					SimPin in16 = chip.InputPins[0];
 					SimPin out8A = chip.OutputPins[0];
 					SimPin out8B = chip.OutputPins[1];
-					PinState.Set4BitFrom8BitSource(ref out8A.State, in16.State, false);
-					PinState.Set4BitFrom8BitSource(ref out8B.State, in16.State, true);
+					PinState.Set8BitFrom16BitSource(ref out8A.State, in16.State, false);
+					PinState.Set8BitFrom16BitSource(ref out8B.State, in16.State, true);
 					break;
 				}
 				case ChipType.TriStateBuffer:
@@ -482,7 +483,7 @@ namespace DLS.Simulation
 						else if (PinState.FirstBitHigh(writePin))
 						{
 							uint addressIndex = PinState.GetBitStates(addressPin) + addressSpace;
-							uint data = (uint)(PinState.GetBitStates(redPin) | (PinState.GetBitStates(greenPin) << 4) | (PinState.GetBitStates(bluePin) << 8));
+							uint data = (uint)(PinState.GetBitStates(redPin) | (PinState.GetBitStates(greenPin) << 8) | (PinState.GetBitStates(bluePin) << 16));
 							chip.InternalState[addressIndex] = data;
 						}
 
@@ -498,9 +499,9 @@ namespace DLS.Simulation
 
 					// Output current pixel colour
 					uint colData = chip.InternalState[PinState.GetBitStates(addressPin)];
-					chip.OutputPins[0].State = (ushort)((colData >> 0) & 0b1111); // red
-					chip.OutputPins[1].State = (ushort)((colData >> 4) & 0b1111); // green
-					chip.OutputPins[2].State = (ushort)((colData >> 8) & 0b1111); // blue
+					chip.OutputPins[0].State = (ushort)((colData >> 0) & 0b11111111); // red
+					chip.OutputPins[1].State = (ushort)((colData >> 8) & 0b11111111); // green
+					chip.OutputPins[2].State = (ushort)((colData >> 16) & 0b11111111); // blue
 
 					break;
 				}
@@ -587,7 +588,7 @@ namespace DLS.Simulation
 
 					break;
 				}
-				case ChipType.Rom_256x16:
+				case ChipType.Rom_256x2x8:
 				{
 					const int ByteMask = 0b11111111;
 					uint address = PinState.GetBitStates(chip.InputPins[0].State);
@@ -620,6 +621,23 @@ namespace DLS.Simulation
                     }
                     break;
                 }
+				case ChipType.Rom_256x16:
+				{
+					const int ByteMask = 0b1111111111111111;
+					uint address = PinState.GetBitStates(chip.InputPins[0].State);
+					uint data = chip.InternalState[address];
+					chip.OutputPins[0].State = (ushort)(data & ByteMask);
+					break;
+				}
+				case ChipType.Rom_256x32:
+				{
+					const int ByteMask = 0b1111111111111111;
+					uint address = PinState.GetBitStates(chip.InputPins[0].State);
+					uint data = chip.InternalState[address];
+					chip.OutputPins[0].State = (ushort)((data >> 16) & ByteMask);
+					chip.OutputPins[1].State = (ushort)(data & ByteMask);
+					break;
+				}
 				// ---- Bus types ----
 				default:
 				{
