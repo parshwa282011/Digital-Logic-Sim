@@ -638,6 +638,13 @@ namespace DLS.Simulation
 					chip.OutputPins[1].State = (ushort)(data & ByteMask);
 					break;
 				}
+				case ChipType.Buzzer:
+				{
+					int freqIndex = PinState.GetBitStates(chip.InputPins[0].State);
+					int volumeIndex = PinState.GetBitStates(chip.InputPins[1].State);
+					audioState.RegisterNote(freqIndex, (uint)volumeIndex);
+					break;
+				}
 				// ---- Bus types ----
 				default:
 				{
