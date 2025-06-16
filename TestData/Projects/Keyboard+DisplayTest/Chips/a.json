@@ -1,0 +1,21 @@
+{
+  "DLSVersion": "2.1.6",
+  "Name": "a",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.37,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 0.211813927,
+    "g": 0.2452126,
+    "b": 0.03325461,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[],
+  "SubChips":[],
+  "Wires":[],
+  "Displays": null
+}

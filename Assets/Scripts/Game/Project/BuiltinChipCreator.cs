@@ -55,7 +55,7 @@ namespace DLS.Game
 				CreateDisplayDot(),
 				CreateDisplayLED(),
 				CreateDisplayRGBLED(),
-				CreateDisplayAscii8Bit(),
+				CreateDisplayUTF16Bit(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -444,16 +444,17 @@ namespace DLS.Game
 			return CreateBuiltinChipDescription(ChipType.DisplayRGBLED, size, col, inputPins, null, displays, NameDisplayLocation.Hidden);
 		}
 
-		static ChipDescription CreateDisplayAscii8Bit()
+		static ChipDescription CreateDisplayUTF16Bit()
 		{
 			PinDescription[] inputPins =
 			{
 				CreatePinDescription("ON", 0),
-				CreatePinDescription("Letter", 1, PinBitCount.Bit8)
+				CreatePinDescription("Address", 1, PinBitCount.Bit4),
+				CreatePinDescription("Letter", 2, PinBitCount.Bit16)
 			};
 			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
-			float width = height;
-			float displayWidth = height - GridSize * 0.5f;
+			float width = height * 2.5f;
+			float displayWidth = width - GridSize * 0.5f;
 
 			Color col = new(0f, 0f, 0f);
 			Vector2 size = new(width, height);
@@ -469,8 +470,9 @@ namespace DLS.Game
 				}
 			};
 
-			return CreateBuiltinChipDescription(ChipType.DisplayAscii_8Bit, size, col, inputPins, null, displays, NameDisplayLocation.Centre);
+			return CreateBuiltinChipDescription(ChipType.DisplayUTF, size, col, inputPins, null, displays, NameDisplayLocation.Hidden);
 		}
+		
 		static ChipDescription CreateDisplayLED()
 		{
 			PinDescription[] inputPins =
@@ -518,7 +520,7 @@ namespace DLS.Game
 		}
 
 
-		static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs, PinDescription[] outputs, DisplayDescription[] displays = null, NameDisplayLocation nameLoc = NameDisplayLocation.Centre)
+		public static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs, PinDescription[] outputs, DisplayDescription[] displays = null, NameDisplayLocation nameLoc = NameDisplayLocation.Centre)
 		{
 			string name = ChipTypeHelper.GetName(type);
 			ValidatePinIDs(inputs, outputs, name);
@@ -538,7 +540,7 @@ namespace DLS.Game
 			};
 		}
 
-		static PinDescription CreatePinDescription(string name, int id, PinBitCount bitCount = PinBitCount.Bit1) =>
+		public static PinDescription CreatePinDescription(string name, int id, PinBitCount bitCount = PinBitCount.Bit1) =>
 			new(
 				name,
 				id,

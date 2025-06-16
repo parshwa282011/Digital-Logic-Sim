@@ -314,10 +314,6 @@ namespace DLS.Graphics
 				{
 					displayName = subchip.Description.Name;
 				}
-				if(subchip.ChipType == ChipType.DisplayAscii_8Bit)
-				{
-					displayName = "";
-				}
 
 				bool nameCentre = desc.NameLocation == NameDisplayLocation.Centre || isKeyChip;
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
@@ -398,12 +394,12 @@ namespace DLS.Graphics
 			if (display.DisplayType is ChipType.Custom)
 			{
 				sim = sim?.GetSubChipFromID(display.Desc.SubChipID);
-
 				foreach (DisplayInstance child in display.ChildDisplays)
 				{
 					Bounds2D childBounds = DrawDisplay(child, posWorld, scaleWorld, rootChip, sim);
 					bounds = Bounds2D.Grow(bounds, childBounds);
 				}
+				
 			}
 			else if (display.DisplayType is ChipType.SevenSegmentDisplay)
 			{
@@ -446,15 +442,15 @@ namespace DLS.Graphics
 
 			else if (display.DisplayType == ChipType.DisplayRGBLED)
 			{
-				bool simActive = sim != null; 
+				bool simActive = sim != null;
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
 				bounds = DrawDisplay_DisplayRGBLED(posWorld, scaleWorld, isOn, sim);
 			}
-			else if (display.DisplayType == ChipType.DisplayAscii_8Bit)
+			else if (display.DisplayType == ChipType.DisplayUTF)
 			{
-				bool simActive = sim != null; 
+				bool simActive = sim != null;
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
-				bounds = DrawDisplay_DisplayAscii8_Bit(posWorld, scaleWorld, isOn, sim);
+				bounds = DrawDisplay_DisplayUTF(posWorld, scaleWorld, isOn, sim);
 			}
 
 			display.LastDrawBounds = bounds;
@@ -583,20 +579,29 @@ namespace DLS.Graphics
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
 
-		public static Bounds2D DrawDisplay_DisplayAscii8_Bit(Vector2 centre, float scale, bool isOn, SimChip sim)
+		public static Bounds2D DrawDisplay_DisplayUTF(Vector2 centre, float scale, bool isOn, SimChip sim)
 		{
-			if(isOn){
-				string tmp = PinState.GetBitStates(sim.InputPins[1].State).ToString("X").PadLeft(4, '0');
-				ushort codeUnit = Convert.ToUInt16(tmp, 16);
-				string displayName = ((char)codeUnit).ToString();
+			if(isOn)
+			{
+				string displayName = "";
+				Debug.Log("Display UTF: " + sim.InternalState.Length);
+				Debug.Log(sim.InternalState.ToString());
+				for (int i = 0; i < 16; i++)
+				{
+					if (i >= sim.InternalState.Length) break; // Avoid out of bounds
+					string tmp = sim.InternalState[i].ToString("X").PadLeft(4, '0');
+					ushort codeUnit = Convert.ToUInt16(tmp, 16);
+					displayName += ((char)codeUnit).ToString();
+				}
 				Debug.Log("Name: " + displayName);
 				Anchor textAnchor = Anchor.TextCentre;
 				Vector2 textPos = centre;
 
-				Draw.Text(FontBold, displayName, FontSizeChipName, textPos, textAnchor, Color.white, ChipNameLineSpacing);
+				Draw.Text(FontAscii, displayName, FontSizeChipName, textPos, textAnchor, Color.white, ChipNameLineSpacing);
 			}
-			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+			return Bounds2D.CreateFromCentreAndSize(centre, new Vector2(1, 0.125f/scale) * scale);
 		}
+		
 		public static Bounds2D DrawDisplay_DisplayRGBLED(Vector2 centre, float scale, bool isOn, SimChip sim)
 		{
 			const float pixelSizeT = 0.975f;
@@ -619,7 +624,7 @@ namespace DLS.Graphics
 						1
 					);
 			}
-			Color col = isOn ? onColor : new Color(0,0,0,1);
+			Color col = isOn ? onColor : new Color(0, 0, 0, 1);
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
