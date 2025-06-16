@@ -91,6 +91,7 @@ namespace DLS.SaveSystem
 				ChipType.Rom_256x32 => new uint[ROMStorage],
 				ChipType.Key => new uint[] { 'K' },
 				ChipType.Pulse => new uint[] { 50, 0, 0 },
+				ChipType.DisplayUTF => new uint[16] { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32 },
 				_ => ChipTypeHelper.IsBusType(type) ? new uint[2] : null
 			};
 
@@ -109,7 +110,10 @@ namespace DLS.SaveSystem
 		{
 			return type switch
 			{
+				ChipType.DisplayUTF => new uint[16], // ammount of chars
+				ChipType.Rom_256x2x8 => new uint[256], // ROM contents
 				ChipType.Rom_256x16 => new uint[256], // ROM contents
+				ChipType.Rom_256x32 => new uint[256], // ROM contents
 				ChipType.Key => new uint[] { 'K' }, // Key binding
 				ChipType.Pulse => new uint[] { 50, 0, 0 }, // Pulse width, ticks remaining, input state old
 				ChipType.DisplayLED => new uint[] { 0 }, // LED colour

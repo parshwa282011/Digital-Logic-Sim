@@ -40,7 +40,7 @@ namespace DLS.Description
 			{ ChipType.SevenSegmentDisplay, "7-SEGMENT" },
 			{ ChipType.DisplayLED, "LED" },
 			{ ChipType.DisplayRGBLED, "RGBLED" },
-			{ ChipType.DisplayAscii_8Bit, "A"},
+			{ ChipType.DisplayUTF, "Text Display"},
 
 			{ ChipType.Buzzer, "BUZZER" },
 

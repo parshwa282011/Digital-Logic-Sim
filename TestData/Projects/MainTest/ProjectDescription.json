@@ -3,7 +3,7 @@
   "DLSVersion_LastSaved": "2.1.6",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-03-14T10:23:30.404-07:00",
-  "LastSaveTime": "2025-05-06T16:17:16.888-07:00",
+  "LastSaveTime": "2025-06-15T15:34:30.626-07:00",
   "Prefs_MainPinNamesDisplayMode": 2,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 1,
@@ -63,7 +63,8 @@
     "TEST MergeSplit",
     "#",
     "BuzzTest",
-    "0x25D9"
+    "test",
+    "a"
   ],
   "StarredList":[
     {
@@ -99,7 +100,11 @@
       "IsCollection":false
     },
     {
-      "Name":"0x25D9",
+      "Name":"test",
+      "IsCollection":false
+    },
+    {
+      "Name":"a",
       "IsCollection":false
     }
   ],
@@ -136,7 +141,7 @@
     },
     {
       "Chips":["D-LATCH","FLIP-FLOP","OR-8","MEM-1","NOT-8","AND(8,1)","MUX-8","PC","BUF-8","ALU-8","DECODE-3","AND-3","CONTROL UNIT","TOGGLE","FLAGS","DISP-7","demo","7-SEGMENT DRIVER","DABBLE","LSB","LSHIFT-8","DOUBLE DABBLE","ALU","BUS BUFFER","MEM-256","REGISTER-8","XNOR","EQUALS-8","ADDER-4","DECODER-2","ADDER-8","ADDER","MEM-16","REGISTER-1","AND-8","RAM-256×8 (async)","ROM 256×16"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"KEEP"
     },
     {
@@ -145,7 +150,7 @@
       "Name":"TEST"
     },
     {
-      "Chips":["PULSE","TEST MergeSplit","IN-16","OUT-16","16-1BIT","16-4BIT","16-8BIT","1-16BIT","4-16BIT","8-16BIT","RGBLED","BUS-16","#","ROM 256×x2x8","ROM 256×32","BUZZER","BuzzTest","0x25D9","Ascii 8Bit Display◙"],
+      "Chips":["PULSE","TEST MergeSplit","IN-16","OUT-16","16-1BIT","16-4BIT","16-8BIT","1-16BIT","4-16BIT","8-16BIT","RGBLED","BUS-16","#","ROM 256×x2x8","ROM 256×32","BUZZER","BuzzTest","0x25D9","Ascii 8Bit Display◙","Text Display","test","a"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }

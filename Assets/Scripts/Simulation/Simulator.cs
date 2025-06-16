@@ -645,6 +645,16 @@ namespace DLS.Simulation
 					audioState.RegisterNote(freqIndex, (uint)volumeIndex);
 					break;
 				}
+				case ChipType.DisplayUTF:
+				{
+					int addressPin = PinState.GetBitStates(chip.InputPins[1].State);
+					uint dataPin = PinState.GetBitStates(chip.InputPins[2].State);
+					if (chip.InputPins[0].State == PinState.LogicHigh)
+					{
+						chip.InternalState[addressPin] = dataPin;
+					}
+					break;
+				}
 				// ---- Bus types ----
 				default:
 				{

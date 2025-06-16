@@ -207,84 +207,130 @@ namespace DLS.Graphics
 
 			return true;
 		}
+		
+		static long TwosComplement(ulong value, int bitWidth)
+		{
+			if (bitWidth <= 0 || bitWidth > 64)
+				throw new ArgumentOutOfRangeException(nameof(bitWidth), "bitWidth must be between 1 and 64.");
+
+			// Create a mask for the specified bit width
+			ulong mask = (1UL << bitWidth) - 1;
+			value = value & mask; // Ensure value fits within bitWidth
+
+			// Check if the sign bit is set
+			ulong signBit = 1UL << (bitWidth - 1);
+			if ((value & signBit) != 0)
+			{
+				// If sign bit is set, convert to negative value
+				// Subtract 2^bitWidth to get the negative representation
+				return (long)value - (long)(1UL << bitWidth);
+			}
+			
+			return (long)value;
+		}
 
 		// Convert from uint to display string with given display mode
 		static string UIntToDisplayString(uint raw, DataDisplayMode displayFormat, int bitCount)
 		{
-			string data = displayFormat switch
+			return displayFormat switch
 			{
 				DataDisplayMode.Binary => Convert.ToString(raw, 2).PadLeft(bitCount, '0'),
-				DataDisplayMode.DecimalSigned => Maths.TwosComplement(raw, bitCount) + "",
-				DataDisplayMode.DecimalUnsigned => raw + "",
-				DataDisplayMode.HEX => raw.ToString("X").PadLeft(bitCount / 4, '0'),
+				DataDisplayMode.DecimalSigned => TwosComplement(raw, bitCount).ToString(),
+				DataDisplayMode.DecimalUnsigned => raw.ToString(),
+				DataDisplayMode.HEX => raw.ToString("X").PadLeft((bitCount + 3) / 4, '0'), // Proper hex padding
 				_ => throw new NotImplementedException("Unsupported display format: " + displayFormat)
 			};
-			Debug.Log("Loaded "+data);
-			return data;
 		}
 
 		// Convert string with given format to uint
 		static uint DisplayStringToUInt(string displayString, DataDisplayMode stringFormat, int bitCount)
 		{
 			displayString = displayString.Replace(" ", string.Empty);
+			if (displayString == string.Empty)
+			{
+				return 0;
+			}
+			if (displayString.Length > bitCount)
+			{
+				displayString = displayString.Substring(0,bitCount-1);
+			}
+			
 			Debug.Log("Display " + displayString);
 			uint uintVal;
-			try{
-				switch (stringFormat)
-				{
-					case DataDisplayMode.Binary:
+			
+			switch (stringFormat)
+			{
+				case DataDisplayMode.Binary:
+					if (bitCount <= 32)
+					{
 						uintVal = Convert.ToUInt32(displayString, 2);
-						break;
-					case DataDisplayMode.DecimalSigned:
+					}
+					else
+					{
+						// For >32 bits, truncate to 32 bits
+						ulong value = Convert.ToUInt64(displayString, 2);
+						uintVal = (uint)(value & 0xFFFFFFFF);
+					}
+					break;
+					
+				case DataDisplayMode.DecimalSigned:
+					if (bitCount <= 32)
 					{
 						int signedValue = int.Parse(displayString);
-						uint unsignedRange = 1u << bitCount;
 						if (signedValue < 0)
 						{
-							uintVal = (uint)(signedValue + unsignedRange);
+							// Convert negative signed value to unsigned representation
+							uintVal = (uint)(signedValue + (1L << bitCount));
 						}
 						else
 						{
 							uintVal = (uint)signedValue;
 						}
-
-						break;
 					}
-					case DataDisplayMode.DecimalUnsigned:
-						uintVal = uint.Parse(displayString);
-						break;
-					case DataDisplayMode.HEX:
-						int value = Convert.ToInt32(displayString, 16);
-						uintVal = (uint)value;
-						break;
-					default:
-						throw new NotImplementedException("Unsupported display format: " + stringFormat);
-				}
-			}catch (Exception e){
-				Debug.Log(e);
-				if (stringFormat is DataDisplayMode.Binary)
-				{
-					uintVal =(uint) ((ulong) (Convert.ToInt64(displayString, 2))& 0xFFFFFFFF);
-				}
-				uintVal = 0;
-				switch (stringFormat){
-					case DataDisplayMode.DecimalUnsigned:
+					else
+					{
+						// For >32 bits, still return uint (truncated)
+						long signedValue = long.Parse(displayString);
+						if (signedValue < 0)
+						{
+							uintVal = (uint)(signedValue + (1L << Math.Min(bitCount, 32)));
+						}
+						else
+						{
+							uintVal = (uint)signedValue;
+						}
+					}
+					break;
+					
+				case DataDisplayMode.DecimalUnsigned:
+					if (bitCount <= 32)
 					{
 						uintVal = uint.Parse(displayString);
-						break;
 					}
-					case DataDisplayMode.HEX:
+					else
 					{
-						int value = Convert.ToInt32(displayString, 16);
-						uintVal = (uint)value;
-						break;
+						// Parse as ulong but truncate to uint
+						ulong value = ulong.Parse(displayString);
+						uintVal = (uint)(value & 0xFFFFFFFF);
 					}
-					default:
+					break;
+					
+				case DataDisplayMode.HEX:
+					if (bitCount <= 32)
 					{
-						throw new NotImplementedException("Unsupported display format: " + stringFormat);
+						uintVal = Convert.ToUInt32(displayString, 16);
 					}
-				}
+					else
+					{
+						ulong value = Convert.ToUInt64(displayString, 16);
+						uintVal = (uint)(value & 0xFFFFFFFF);
+					}
+					break;
+					
+				default:
+					throw new NotImplementedException("Unsupported display format: " + stringFormat);
 			}
+
 			Debug.Log(uintVal);
 			return uintVal;
 		}

@@ -31,8 +31,8 @@ namespace DLS.Game
 
 		// ---- Single key shortcuts ----
 		public static bool CancelShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Escape);
-		public static bool ConfirmShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Return) || InputHelper.IsKeyDownThisFrame(KeyCode.KeypadEnter);
-		public static bool DeleteShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Backspace) || InputHelper.IsKeyDownThisFrame(KeyCode.Delete);
+		public static bool ConfirmShortcutTriggered => (InputHelper.IsKeyDownThisFrame(KeyCode.Return) || InputHelper.IsKeyDownThisFrame(KeyCode.KeypadEnter)) && InputHelper.ShiftIsHeld;
+		public static bool DeleteShortcutTriggered => (InputHelper.IsKeyDownThisFrame(KeyCode.Backspace) || InputHelper.IsKeyDownThisFrame(KeyCode.Delete)) && InputHelper.ShiftIsHeld;
 		public static bool SimNextStepShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Space) && !InputHelper.CtrlIsHeld;
 		public static bool SimPauseToggleShortcutTriggered => CtrlShortcutTriggered(KeyCode.Space);
 

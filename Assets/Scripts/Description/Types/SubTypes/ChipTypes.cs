@@ -23,7 +23,7 @@ namespace DLS.Description
 		DisplayDot,
 		DisplayLED,
 		DisplayRGBLED,
-		DisplayAscii_8Bit,
+		DisplayUTF,
 
 		// ---- Merge / Split ----
 		Merge_1To4Bit,
