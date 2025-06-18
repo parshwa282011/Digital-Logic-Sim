@@ -1,4 +1,6 @@
 using DLS.Game;
+using DLS.Description;
+using DLS.External;
 using Seb.Types;
 using Seb.Vis;
 using Seb.Vis.UI;
@@ -64,6 +66,10 @@ namespace DLS.Graphics
 		static void Confirm(string newName)
 		{
 			subChip.Label = newName;
+			if (ChipTypeHelper.IsPortChip(subChip.ChipType))
+			{
+				PortHttpServer.SetPortName((uint)subChip.ID, newName);
+			}
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
 

@@ -266,6 +266,7 @@ namespace DLS.Game
 			{
 				ProjectName = this.description.ProjectName
 			});
+			RegisterAllPortLabelsWithHttpServer();
 		}
 
 		void SetNewActiveDevChip(DevChipInstance devChip)
@@ -733,6 +734,20 @@ namespace DLS.Game
 						collection.Chips.RemoveAt(i);
 						return;
 					}
+				}
+			}
+		}
+
+		// Register all PortIn/PortOut subchip labels with the HTTP server for the current DevChipInstance
+		void RegisterAllPortLabelsWithHttpServer()
+		{
+			var devChip = editModeChip;
+			foreach (var subchip in devChip.GetSubchips())
+			{
+				if (DLS.Description.ChipTypeHelper.IsPortChip(subchip.ChipType))
+				{
+					string label = string.IsNullOrEmpty(subchip.Label) ? subchip.Description.Name : subchip.Label;
+					DLS.External.PortHttpServer.SetPortName((uint)subchip.ID, label);
 				}
 			}
 		}

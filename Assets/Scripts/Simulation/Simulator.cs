@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.External;
 using Random = System.Random;
 
 namespace DLS.Simulation
@@ -653,6 +654,54 @@ namespace DLS.Simulation
 					{
 						chip.InternalState[addressPin] = dataPin;
 					}
+					break;
+				}
+				case ChipType.PortIn_1Bit:
+				{
+					uint inputState = PortHttpServer.GetPortInValue((uint)chip.ID);
+					chip.OutputPins[0].State = inputState;
+					break;
+				}
+				case ChipType.PortOut_1Bit:
+				{
+					uint outputState = chip.InputPins[0].State;
+					PortHttpServer.SetPortOutValue((uint)chip.ID, outputState);
+					break;
+				}
+				case ChipType.PortIn_4Bit:
+				{
+					uint inputState = PortHttpServer.GetPortInValue((uint)chip.ID);
+					chip.OutputPins[0].State = inputState;
+					break;
+				}
+				case ChipType.PortOut_4Bit:
+				{
+					uint outputState = chip.InputPins[0].State;
+					PortHttpServer.SetPortOutValue((uint)chip.ID, outputState);
+					break;
+				}
+				case ChipType.PortIn_8Bit:
+				{
+					uint inputState = PortHttpServer.GetPortInValue((uint)chip.ID);
+					chip.OutputPins[0].State = inputState;
+					break;
+				}
+				case ChipType.PortOut_8Bit:
+				{
+					uint outputState = chip.InputPins[0].State;
+					PortHttpServer.SetPortOutValue((uint)chip.ID, outputState);
+					break;
+				}
+				case ChipType.PortIn_16Bit:
+				{
+					uint inputState = PortHttpServer.GetPortInValue((uint)chip.ID);
+					chip.OutputPins[0].State = inputState;
+					break;
+				}
+				case ChipType.PortOut_16Bit:
+				{
+					uint outputState = chip.InputPins[0].State;
+					PortHttpServer.SetPortOutValue((uint)chip.ID, outputState);
 					break;
 				}
 				// ---- Bus types ----

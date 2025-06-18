@@ -42,6 +42,17 @@ namespace DLS.Description
 			{ ChipType.DisplayRGBLED, "RGBLED" },
 			{ ChipType.DisplayUTF, "Text Display"},
 
+			// ---- Ports ----
+			{ChipType.PortIn_1Bit, "PORT-IN-1"},
+			{ChipType.PortIn_4Bit, "PORT-IN-4"},
+			{ChipType.PortIn_8Bit, "PORT-IN-8"},
+			{ChipType.PortIn_16Bit, "PORT-IN-16"},
+			{ChipType.PortOut_1Bit, "PORT-OUT-1"},
+			{ChipType.PortOut_4Bit, "PORT-OUT-4"},
+			{ChipType.PortOut_8Bit, "PORT-OUT-8"},
+			{ChipType.PortOut_16Bit, "PORT-OUT-16"},
+
+			// ---- Buzzer ----
 			{ ChipType.Buzzer, "BUZZER" },
 
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
@@ -54,6 +65,7 @@ namespace DLS.Description
 			{ ChipType.Out_4Bit, "OUT-4" },
 			{ ChipType.Out_8Bit, "OUT-8" },
 			{ ChipType.Key, "KEY" },
+
 			// ---- Buses ----
 			{ ChipType.Bus_1Bit, "BUS-1" },
 			{ ChipType.Bus_4Bit, "BUS-4" },
@@ -118,6 +130,11 @@ namespace DLS.Description
 				ChipType.Out_8Bit => (false, true, PinBitCount.Bit8),
 				_ => (false, false, PinBitCount.Bit1)
 			};
+		}
+		public static bool IsPortChip(ChipType type)
+		{
+			return type is ChipType.PortIn_1Bit or ChipType.PortIn_4Bit or ChipType.PortIn_8Bit or ChipType.PortIn_16Bit
+				|| type is ChipType.PortOut_1Bit or ChipType.PortOut_4Bit or ChipType.PortOut_8Bit or ChipType.PortOut_16Bit;
 		}
 	}
 }

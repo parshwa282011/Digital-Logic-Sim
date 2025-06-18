@@ -18,33 +18,13 @@ namespace DLS.External
         private static Dictionary<uint, uint> portOutValues = new();
         private static Dictionary<uint, uint> portInValues = new();
         private static bool running = false;
-        static bool isSyncing = false; // Prevents infinite sync loops
-
-        // --- Sync with PortSocketServer ---
-        public static Action<uint, string> OnSetPortName;
-        public static Action<uint, uint> OnSetPortOutValue;
-        public static Action<uint, uint> OnSetPortInValue;
-
-        static PortHttpServer()
-        {
-            // Register sync callbacks for WebSocket server
-            OnSetPortName += (port, name) => {
-                DLS.External.PortSocketServer.SetPortName(port, name, true);
-            };
-            OnSetPortOutValue += (port, value) => {
-                DLS.External.PortSocketServer.SetPortOutValue(port, value,true);
-            };
-            OnSetPortInValue += (port, value) => {
-                DLS.External.PortSocketServer.SyncSetPortInValue(port, value, true);
-            };
-        }
 
         public static void Start()
         {
             if (running) return;
             running = true;
             listener = new HttpListener();
-            listener.Prefixes.Add("http://localhost:9999/");
+            listener.Prefixes.Add("http://localhost:9000/");
             serverThread = new Thread(ServerLoop);
             serverThread.Start();
         }
@@ -66,20 +46,12 @@ namespace DLS.External
             serverThread = null;
         }
 
-        public static void StartBoth()
-        {
-            if (!running) Start();
-            DLS.External.PortSocketServer.Start();
-        }
-
         public static void SetPortName(uint port, string name)
         {
             lock (names)
             {
                 names[port] = name;
             }
-            BroadcastPortStates();
-            OnSetPortName?.Invoke(port, name);
         }
 
         public static void SetPortOutValue(uint port, uint value)
@@ -88,25 +60,6 @@ namespace DLS.External
             {
                 portOutValues[port] = value;
             }
-            BroadcastPortStates();
-            OnSetPortOutValue?.Invoke(port, value);
-        }
-
-        public static void SyncSetPortInValue(uint port, uint value, bool isSync = false)
-        {
-            if (isSyncing && isSync) return; // Prevent infinite sync only if called as a sync
-            if (isSync) isSyncing = true;
-            uint safeValue = value;
-            lock (portInValues) portInValues[port] = safeValue;
-            BroadcastPortStates();
-            OnSetPortInValue?.Invoke(port, safeValue);
-            if (isSync) isSyncing = false;
-        }
-
-        // New: direct input from user or external, not a sync
-        public static void SetPortInValue(uint port, uint value)
-        {
-            SyncSetPortInValue(port, value, false);
         }
 
         public static uint GetPortInValue(uint port)
@@ -193,12 +146,6 @@ namespace DLS.External
             resp.ContentLength64 = buf.Length;
             resp.OutputStream.Write(buf, 0, buf.Length);
             resp.Close();
-        }
-
-        private static void BroadcastPortStates()
-        {
-            // This method should broadcast the current state of ports to all connected clients
-            // Implementation depends on the specific requirements and is not provided here
         }
     }
 }

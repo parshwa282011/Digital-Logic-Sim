@@ -56,6 +56,19 @@ namespace DLS.Description
 		BusTerminus_4Bit,
 		Bus_8Bit,
 		BusTerminus_8Bit,
+		Bus_16Bit,
+		BusTerminus_16Bit,
+
+		// ---- PORT Chips ----
+
+		PortIn_1Bit,
+		PortIn_4Bit,
+		PortIn_8Bit,
+		PortIn_16Bit,
+		PortOut_1Bit,
+		PortOut_4Bit,
+		PortOut_8Bit,
+		PortOut_16Bit,
 		
 		// ---- Audio ----
 		Buzzer
