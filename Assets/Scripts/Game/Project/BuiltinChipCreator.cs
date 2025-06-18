@@ -66,7 +66,15 @@ namespace DLS.Game
 				CreateBus(PinBitCount.Bit16),
 				CreateBusTerminus(PinBitCount.Bit16),
 				// ---- Audio ----
-				CreateBuzzer()
+				CreateBuzzer(),
+				CreatePortIn(PinBitCount.Bit1),
+				CreatePortIn(PinBitCount.Bit4),
+				CreatePortIn(PinBitCount.Bit8),
+				CreatePortIn(PinBitCount.Bit16),
+				CreatePortOut(PinBitCount.Bit1),
+				CreatePortOut(PinBitCount.Bit4),
+				CreatePortOut(PinBitCount.Bit8),
+				CreatePortOut(PinBitCount.Bit16),
 			};
 		}
 
@@ -573,6 +581,46 @@ namespace DLS.Game
 					}
 				}
 			}
+		}
+
+		static ChipDescription CreatePortIn(PinBitCount bitCount)
+		{
+			ChipType type = bitCount switch
+			{
+				PinBitCount.Bit1 => ChipType.PortIn_1Bit,
+				PinBitCount.Bit4 => ChipType.PortIn_4Bit,
+				PinBitCount.Bit8 => ChipType.PortIn_8Bit,
+				PinBitCount.Bit16 => ChipType.PortIn_16Bit,
+				_ => throw new Exception("Port In bit count not implemented")
+			};
+			string name = $"PORT-IN-{(int)bitCount}";
+			PinDescription[] outputPins = { CreatePinDescription("OUT", 0, bitCount) };
+
+			Color col = new(0f, 1f, 0f);
+			Vector2 size = new(2.1f, 0.7f);
+
+			return CreateBuiltinChipDescription(type, size, col, null, outputPins, null);
+		}
+
+		static ChipDescription CreatePortOut(PinBitCount bitCount)
+		{
+			ChipType type = bitCount switch
+			{
+				PinBitCount.Bit1 => ChipType.PortOut_1Bit,
+				PinBitCount.Bit4 => ChipType.PortOut_4Bit,
+				PinBitCount.Bit8 => ChipType.PortOut_8Bit,
+				PinBitCount.Bit16 => ChipType.PortOut_16Bit,
+				_ => throw new Exception("Port Out bit count not implemented")
+			};
+			string name = $"PORT-OUT-{(int)bitCount}";
+			PinDescription[] inputPins = { CreatePinDescription("IN", 0, bitCount) };
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float width = height;
+
+			Color col = new(0f, 1f, 0f);
+			Vector2 size = new(2.1f, 0.7f);
+
+			return CreateBuiltinChipDescription(type, size, col, inputPins, null, null);
 		}
 	}
 }

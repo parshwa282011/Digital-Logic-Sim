@@ -1,0 +1,97 @@
+{
+  "DLSVersion": "2.1.6",
+  "Name": "as",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.425,
+    "y": 0.5
+  },
+  "Colour": {
+    "r": 0.440327048,
+    "g": 0.27677995,
+    "b": 0.210211426,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"IN",
+      "ID":21859886,
+      "Position":{
+        "x":-2.5,
+        "y":1.6087
+      },
+      "BitCount":16,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[
+    {
+      "Name":"OUT",
+      "ID":856870015,
+      "Position":{
+        "x":-2.5,
+        "y":0.6712
+      },
+      "BitCount":16,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "SubChips":[
+    {
+      "Name":"PORT-IN-16",
+      "ID":1338614924,
+      "Label":"",
+      "Position":{
+        "x":-6.13768,
+        "y":0.53623
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":0}],
+      "InternalData":null
+    },
+    {
+      "Name":"PORT-OUT-16",
+      "ID":1404637262,
+      "Label":"",
+      "Position":{
+        "x":2.26812,
+        "y":1.73913
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":1338614924
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":856870015
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":21859886
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":1404637262
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays": null
+}

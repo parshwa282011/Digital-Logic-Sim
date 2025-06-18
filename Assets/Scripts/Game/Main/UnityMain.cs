@@ -1,5 +1,6 @@
 using DLS.Graphics;
 using DLS.Simulation;
+using DLS.External;
 using Seb.Helpers;
 using Seb.Vis;
 using Seb.Vis.UI;
@@ -62,6 +63,7 @@ namespace DLS.Game
 
 		void Awake()
 		{
+			PortHttpServer.Start();
 			instance = this;
 			audioUnity = FindFirstObjectByType<AudioUnity>();
 			ResetStatics();
@@ -154,6 +156,7 @@ namespace DLS.Game
 		void OnDestroy()
 		{
 			if (Project.ActiveProject != null) Project.ActiveProject.NotifyExit();
+			PortHttpServer.Stop();
 		}
 
 		void OnValidate()
