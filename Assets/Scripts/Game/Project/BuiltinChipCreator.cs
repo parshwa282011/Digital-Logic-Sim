@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
 using UnityEngine;
 using static DLS.Graphics.DrawSettings;
@@ -21,8 +22,6 @@ namespace DLS.Game
 				CreateInputOrOutputPin(ChipType.Out_4Bit),
 				CreateInputOrOutputPin(ChipType.In_8Bit),
 				CreateInputOrOutputPin(ChipType.Out_8Bit),
-				CreateInputOrOutputPin(ChipType.In_16Bit),
-				CreateInputOrOutputPin(ChipType.Out_16Bit),
 				CreateInputKeyChip(),
 				// ---- Basic Chips ----
 				CreateNand(),
@@ -63,8 +62,6 @@ namespace DLS.Game
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
 				CreateBusTerminus(PinBitCount.Bit8),
-				CreateBus(PinBitCount.Bit16),
-				CreateBusTerminus(PinBitCount.Bit16),
 				// ---- Audio ----
 				CreateBuzzer(),
 				CreatePortIn(PinBitCount.Bit1),
@@ -105,6 +102,8 @@ namespace DLS.Game
 
 			return CreateBuiltinChipDescription(ChipType.Complex_Internet_Interface, size, col, inputPins, outputPins, null, NameDisplayLocation.Hidden);
 		}
+
+		
 
 		static ChipDescription CreateNand()
 		{
@@ -424,7 +423,6 @@ namespace DLS.Game
 				PinBitCount.Bit1 => new Vector2(GridSize * 2, GridSize * 2),
 				PinBitCount.Bit4 => new Vector2(GridSize * 2, GridSize * 3),
 				PinBitCount.Bit8 => new Vector2(GridSize * 2, GridSize * 4),
-				PinBitCount.Bit16 => new Vector2(GridSize * 2, GridSize * 5),
 				_ => throw new Exception("Bus bit count not implemented")
 			};
 		}
@@ -436,7 +434,6 @@ namespace DLS.Game
 				PinBitCount.Bit1 => ChipType.Bus_1Bit,
 				PinBitCount.Bit4 => ChipType.Bus_4Bit,
 				PinBitCount.Bit8 => ChipType.Bus_8Bit,
-				PinBitCount.Bit16 => ChipType.Bus_16Bit,
 				_ => throw new Exception("Bus bit count not implemented")
 			};
 
@@ -545,7 +542,6 @@ namespace DLS.Game
 				PinBitCount.Bit1 => ChipType.BusTerminus_1Bit,
 				PinBitCount.Bit4 => ChipType.BusTerminus_4Bit,
 				PinBitCount.Bit8 => ChipType.BusTerminus_8Bit,
-				PinBitCount.Bit16 => ChipType.BusTerminus_16Bit,
 				_ => throw new Exception("Bus bit count not implemented")
 			};
 

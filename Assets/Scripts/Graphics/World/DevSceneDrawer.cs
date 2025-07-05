@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
 using DLS.Game;
 using DLS.Simulation;
@@ -438,6 +439,17 @@ namespace DLS.Graphics
 				}
 
 				bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
+			}
+			else if (display.DisplayType == ChipType.Modded)
+			{
+				if (ModdedDisplayCreator.TryGetDrawFunction(display.Desc, out var DrawDisplay_Modded) && sim != null)
+				{
+					uint[] inputStates = sim.InputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
+					uint[] outputStates = sim.OutputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
+
+					DrawDisplay_Modded(posWorld, scaleWorld, inputStates, outputStates);
+				}
+				bounds = Bounds2D.CreateFromCentreAndSize(posWorld, Vector2.one * scaleWorld);
 			}
 
 			else if (display.DisplayType == ChipType.DisplayRGBLED)

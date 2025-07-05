@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using DLS.Description;
 using DLS.Game;
 using DLS.External;
@@ -657,6 +658,30 @@ namespace DLS.Simulation
 					chip.OutputPins[1].State = (ushort)(data & ByteMask);
 					break;
 				}
+				case ChipType.Buzzer:
+				{
+					int freqIndex = PinState.GetBitStates(chip.InputPins[0].State);
+					int volumeIndex = PinState.GetBitStates(chip.InputPins[1].State);
+					audioState.RegisterNote(freqIndex, (uint)volumeIndex);
+					break;
+				}
+				case ChipType.Modded:
+                {
+                    if (ModdedChipCreator.TryGetSimulationFunction(chip.Description, out var simulationFunction))
+                    {
+						uint[] inputStates = chip.InputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
+						uint[] outputStates = chip.OutputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
+
+                        // Call the modded chip's simulation function
+                        simulationFunction(inputStates, outputStates);
+
+						for (int i = 0; i < chip.OutputPins.Length; i++)
+						{
+							chip.OutputPins[i].State = outputStates[i];
+						}
+                    }
+                    break;
+                }
 				case ChipType.Rom_256x16:
 				{
 					const int ByteMask = 0b1111111111111111;

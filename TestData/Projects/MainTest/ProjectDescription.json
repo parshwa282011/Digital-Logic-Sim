@@ -10,8 +10,8 @@
   "Prefs_Snapping": 0,
   "Prefs_StraightWires": 0,
   "Prefs_SimPaused": false,
-  "Prefs_SimTargetStepsPerSecond": 150,
-  "Prefs_SimStepsPerClockTick": 6,
+  "Prefs_SimTargetStepsPerSecond": 50000,
+  "Prefs_SimStepsPerClockTick": 5000,
   "AllCustomChipNames":[
     "AND",
     "D-LATCH",
