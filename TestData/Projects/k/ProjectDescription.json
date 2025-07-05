@@ -1,9 +1,9 @@
 {
-  "ProjectName": "abc",
+  "ProjectName": "k",
   "DLSVersion_LastSaved": "2.1.6",
   "DLSVersion_EarliestCompatible": "2.0.0",
-  "CreationTime": "2025-06-17T22:26:39.789-07:00",
-  "LastSaveTime": "2025-07-01T16:13:02.261-07:00",
+  "CreationTime": "2025-07-01T04:21:38.194-07:00",
+  "LastSaveTime": "2025-07-01T16:50:33.385-07:00",
   "Prefs_MainPinNamesDisplayMode": 1,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 0,
@@ -11,34 +11,10 @@
   "Prefs_StraightWires": 0,
   "Prefs_SimPaused": false,
   "Prefs_SimTargetStepsPerSecond": 1000,
-  "Prefs_SimStepsPerClockTick": 250,
+  "Prefs_SimStepsPerClockTick": 1000,
   "AllCustomChipNames":[
-    "abc",
-    "input Chip",
-    "not",
-    "DELETE KEY CODE",
-    "RIGHT ARROW CODE",
-    "LEFT ARROW CODE",
-    "DOWN ARROW CODE",
-    "UP ARROW CODE",
-    "RETURN CODE",
-    "AND",
-    "OR",
-    "XOR",
-    "XNOR",
-    "check match 16 bit",
-    "D-Latch",
-    "2-bit decoder",
-    "MEM-1",
-    "MEM-16",
-    "MEM-256",
-    "MEM-256-UNMODULAR",
-    "MEM-256-4bit",
-    "MEM-26-16Bit",
-    "POS KEYCODE",
-    "8 Bit Match Checker",
-    "main",
-    "16 3 state buff"
+    "internet-kindof",
+    "not"
   ],
   "StarredList":[
     {
@@ -46,23 +22,7 @@
       "IsCollection":true
     },
     {
-      "Name":"IN/OUT",
-      "IsCollection":true
-    },
-    {
-      "Name":"MERGE/SPLIT",
-      "IsCollection":true
-    },
-    {
-      "Name":"BUS",
-      "IsCollection":true
-    },
-    {
-      "Name":"DISPLAY",
-      "IsCollection":true
-    },
-    {
-      "Name":"MEMORY",
+      "Name":"OTHER",
       "IsCollection":true
     },
     {
@@ -70,15 +30,31 @@
       "IsCollection":true
     },
     {
-      "Name":"OTHER",
+      "Name":"MEMORY",
       "IsCollection":true
     },
     {
-      "Name":"main",
+      "Name":"DISPLAY",
+      "IsCollection":true
+    },
+    {
+      "Name":"BUS",
+      "IsCollection":true
+    },
+    {
+      "Name":"MERGE/SPLIT",
+      "IsCollection":true
+    },
+    {
+      "Name":"IN/OUT",
+      "IsCollection":true
+    },
+    {
+      "Name":"internet-kindof",
       "IsCollection":false
     },
     {
-      "Name":"16 3 state buff",
+      "Name":"not",
       "IsCollection":false
     }
   ],
@@ -90,17 +66,17 @@
     },
     {
       "Chips":["IN-1","IN-4","IN-8","IN-16","OUT-1","OUT-4","OUT-8","OUT-16"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"IN/OUT"
     },
     {
       "Chips":["1-4BIT","1-8BIT","4-8BIT","1-16BIT","4-16BIT","8-16BIT","4-1BIT","8-4BIT","8-1BIT","16-1BIT","16-4BIT","16-8BIT"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"MERGE/SPLIT"
     },
     {
       "Chips":["BUS-1","BUS-4","BUS-8","BUS-16"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"BUS"
     },
     {
@@ -109,17 +85,17 @@
       "Name":"DISPLAY"
     },
     {
-      "Chips":["ROM 256×x2x8","ROM 256×16","ROM 256×32","MEM-1","MEM-16","MEM-256","MEM-256-UNMODULAR","MEM-256-4bit","MEM-26-16Bit"],
+      "Chips":["ROM 256×x2x8","ROM 256×16","ROM 256×32"],
       "IsToggledOpen":true,
       "Name":"MEMORY"
     },
     {
-      "Chips":["PORT-IN-1","PORT-IN-4","PORT-IN-8","PORT-IN-16","PORT-OUT-1","PORT-OUT-4","PORT-OUT-8","PORT-OUT-16"],
-      "IsToggledOpen":false,
+      "Chips":["PORT-IN-1","PORT-IN-4","PORT-IN-8","PORT-IN-16","PORT-OUT-1","PORT-OUT-4","PORT-OUT-8","PORT-OUT-16","Complex Internet Interface"],
+      "IsToggledOpen":true,
       "Name":"PORTS"
     },
     {
-      "Chips":["BUZZER","abc","input Chip","not","DELETE KEY CODE","RIGHT ARROW CODE","LEFT ARROW CODE","DOWN ARROW CODE","UP ARROW CODE","RETURN CODE","AND","OR","XOR","XNOR","check match 16 bit","D-Latch","2-bit decoder","POS KEYCODE","8 Bit Match Checker","main","Complex Internet Interface","16 3 state buff"],
+      "Chips":["BUZZER"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }

@@ -50,6 +50,8 @@ namespace DLS.Description
 			{ChipType.PortOut_4Bit, "PORT-OUT-4"},
 			{ChipType.PortOut_8Bit, "PORT-OUT-8"},
 			{ChipType.PortOut_16Bit, "PORT-OUT-16"},
+			
+			{ ChipType.Complex_Internet_Interface, "Complex Internet Interface" },
 
 			// ---- Buzzer ----
 			{ ChipType.Buzzer, "BUZZER" },

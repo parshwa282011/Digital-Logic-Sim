@@ -36,7 +36,7 @@ namespace DLS.Simulation
 			// ---- Create pins (don't allocate unnecessarily as very many sim chips maybe created!) ----
 			if (desc.InputPins.Length > 0)
 			{
-				InputPins = new SimPin [desc.InputPins.Length];
+				InputPins = new SimPin[desc.InputPins.Length];
 				for (int i = 0; i < InputPins.Length; i++)
 				{
 					InputPins[i] = CreateSimPinFromDescription(desc.InputPins[i], true, this);
@@ -45,7 +45,7 @@ namespace DLS.Simulation
 
 			if (desc.OutputPins.Length > 0)
 			{
-				OutputPins = new SimPin [desc.OutputPins.Length];
+				OutputPins = new SimPin[desc.OutputPins.Length];
 				for (int i = 0; i < OutputPins.Length; i++)
 				{
 					OutputPins[i] = CreateSimPinFromDescription(desc.OutputPins[i], false, this);
@@ -84,6 +84,10 @@ namespace DLS.Simulation
 			else if (ChipType is ChipType.DisplayUTF)
 			{
 				InternalState = new uint[16];
+			}
+			else if (ChipType is ChipType.Complex_Internet_Interface)
+			{
+				InternalState = new uint[4 + 1 + 1000]; // 4 for ip, 1 for port, 1000 for response buffer
 			}
 			// Load in serialized persistent state (rom data, etc.)
 			else if (internalState is { Length: > 0 })

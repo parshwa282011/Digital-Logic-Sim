@@ -75,7 +75,35 @@ namespace DLS.Game
 				CreatePortOut(PinBitCount.Bit4),
 				CreatePortOut(PinBitCount.Bit8),
 				CreatePortOut(PinBitCount.Bit16),
+				CreateComplexChip(),
 			};
+		}
+
+		static ChipDescription CreateComplexChip()
+		{
+			Color col = new(0.1f, 0.1f, 0.1f);
+
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("Clock", 0),
+				CreatePinDescription("IP 1", 1, PinBitCount.Bit16),
+				CreatePinDescription("IP 2", 2, PinBitCount.Bit16),
+				CreatePinDescription("IP 3", 3, PinBitCount.Bit16),
+				CreatePinDescription("IP 4", 4, PinBitCount.Bit16),
+				CreatePinDescription("PORT", 5, PinBitCount.Bit16),
+				CreatePinDescription("DATA 1", 6, PinBitCount.Bit16),
+				CreatePinDescription("DATA 2", 7, PinBitCount.Bit16),
+				CreatePinDescription("SEND", 8)
+			};
+
+			PinDescription[] outputPins = { CreatePinDescription("DATA", 9, PinBitCount.Bit16),
+			CreatePinDescription("ISDATA?", 10, PinBitCount.Bit16) };
+
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 9), height);
+
+			return CreateBuiltinChipDescription(ChipType.Complex_Internet_Interface, size, col, inputPins, outputPins, null, NameDisplayLocation.Hidden);
 		}
 
 		static ChipDescription CreateNand()
