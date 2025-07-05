@@ -241,10 +241,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openSaveDirectory: 0
-  openInMainMenu: 1
-  testProjectName: MainTest
+  openInMainMenu: 0
+  testProjectName: abc
   openA: 1
-  chipToOpenA: a
+  chipToOpenA: abc
   chipToOpenB: TEST MergeSplit
   testVecA: {x: 100, y: 0.5333334}
   testVecB: {x: 1.71, y: 0.0025}

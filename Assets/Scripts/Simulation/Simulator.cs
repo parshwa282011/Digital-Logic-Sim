@@ -278,6 +278,66 @@ namespace DLS.Simulation
 
 					break;
 				}
+				case ChipType.Complex_Internet_Interface:
+				{
+					// Pin mapping (adjust indices as needed)
+					var clockPin = chip.InputPins[0];
+					var ip1 = chip.InputPins[1].State & 0xFFFF;
+					var ip2 = chip.InputPins[2].State & 0xFFFF;
+					var ip3 = chip.InputPins[3].State & 0xFFFF;
+					var ip4 = chip.InputPins[4].State & 0xFFFF;
+					var port = chip.InputPins[5].State & 0xFFFF;
+					var data1 = chip.InputPins[6].State & 0xFFFF;
+					var data2 = chip.InputPins[7].State & 0xFFFF;
+					var send = chip.InputPins[8].FirstBitHigh;
+
+					// Internal state indices
+					const int PrevSendIdx = 0;
+					const int PrevClockIdx = 1;
+					const int BufferIndexIdx = 2;
+					const int BufferLenIdx = 3;
+					const int BufferStartIdx = 4; // buffer chars start here
+					const int BufferMaxLen = 128;
+
+					// Latch inputs (for future use if needed)
+					// On SEND rising edge
+					bool prevSend = chip.InternalState[PrevSendIdx] != 0;
+					if (send && !prevSend)
+					{
+						string url = $"http://{ip1}.{ip2}.{ip3}.{ip4}:{port}/?d1={(char)data1}&d2={(char)data2}";
+						string reply = "";
+						try {
+							using (var client = new System.Net.WebClient())
+								reply = client.DownloadString(url);
+						} catch { reply = "ERR"; }
+						int len = Math.Min(reply.Length, BufferMaxLen);
+						chip.InternalState[BufferLenIdx] = (uint)len;
+						chip.InternalState[BufferIndexIdx] = 0;
+						for (int i = 0; i < len; i++)
+							chip.InternalState[BufferStartIdx + i] = reply[i];
+					}
+					chip.InternalState[PrevSendIdx] = send ? 1u : 0u;
+
+					// On CLOCK rising edge, output next char from buffer
+					bool clock = clockPin.FirstBitHigh;
+					bool prevClock = chip.InternalState[PrevClockIdx] != 0;
+					uint bufferIndex = chip.InternalState[BufferIndexIdx];
+					uint bufferLen = chip.InternalState[BufferLenIdx];
+					// Output 1 if output is still going, 0 if done
+					chip.OutputPins[1].State = (bufferIndex < bufferLen) ? 1u : 0u;
+					if (clock && !prevClock && bufferIndex < bufferLen)
+					{
+						char c = (char)chip.InternalState[BufferStartIdx + bufferIndex];
+						chip.OutputPins[0].State = c;
+						chip.InternalState[BufferIndexIdx] = bufferIndex + 1;
+					}
+					else if (!clock)
+					{
+						chip.OutputPins[0].State = 0;
+					}
+					chip.InternalState[PrevClockIdx] = clock ? 1u : 0u;
+					break;
+				}
 				case ChipType.Split_4To1Bit:
 				{
 					uint inState4Bit = chip.InputPins[0].State;

@@ -73,7 +73,8 @@ namespace DLS.Game
 					ChipType.PortOut_1Bit,
 					ChipType.PortOut_4Bit,
 					ChipType.PortOut_8Bit,
-					ChipType.PortOut_16Bit
+					ChipType.PortOut_16Bit,
+					ChipType.Complex_Internet_Interface
 				),
 			};
 		}

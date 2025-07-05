@@ -62,6 +62,9 @@ namespace DLS.Game
 
 		public static void LoadMainMenu()
 		{
+			// Stop port servers when returning to main menu
+			DLS.External.PortHttpServer.Stop();
+			DLS.External.PortSocketServer.Stop();
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.MainMenu);
 		}
 
@@ -74,6 +77,9 @@ namespace DLS.Game
 
 			ActiveProject.StartSimulation();
 			ActiveProject.audioState = audioState;
+			// Start port servers when project is loaded
+			DLS.External.PortHttpServer.StartBoth();
+			DLS.External.PortSocketServer.StartBoth();
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
 

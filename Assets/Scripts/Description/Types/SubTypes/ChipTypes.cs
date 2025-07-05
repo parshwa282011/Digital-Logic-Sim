@@ -69,6 +69,8 @@ namespace DLS.Description
 		PortOut_4Bit,
 		PortOut_8Bit,
 		PortOut_16Bit,
+
+		Complex_Internet_Interface,
 		
 		// ---- Audio ----
 		Buzzer
