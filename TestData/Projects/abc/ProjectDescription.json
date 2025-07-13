@@ -3,7 +3,7 @@
   "DLSVersion_LastSaved": "2.1.6",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-06-17T22:26:39.789-07:00",
-  "LastSaveTime": "2025-07-01T16:13:02.261-07:00",
+  "LastSaveTime": "2025-07-13T15:29:45.649-07:00",
   "Prefs_MainPinNamesDisplayMode": 1,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 0,
@@ -86,42 +86,50 @@
     {
       "Chips":["NAND","CLOCK","PULSE","KEY","3-STATE BUFFER"],
       "IsToggledOpen":false,
-      "Name":"BASIC"
+      "Name":"BASIC",
+      "DependsOnModIDs":[]
     },
     {
       "Chips":["IN-1","IN-4","IN-8","IN-16","OUT-1","OUT-4","OUT-8","OUT-16"],
       "IsToggledOpen":false,
-      "Name":"IN/OUT"
+      "Name":"IN/OUT",
+      "DependsOnModIDs":[]
     },
     {
       "Chips":["1-4BIT","1-8BIT","4-8BIT","1-16BIT","4-16BIT","8-16BIT","4-1BIT","8-4BIT","8-1BIT","16-1BIT","16-4BIT","16-8BIT"],
       "IsToggledOpen":false,
-      "Name":"MERGE/SPLIT"
+      "Name":"MERGE/SPLIT",
+      "DependsOnModIDs":[]
     },
     {
       "Chips":["BUS-1","BUS-4","BUS-8","BUS-16"],
       "IsToggledOpen":false,
-      "Name":"BUS"
+      "Name":"BUS",
+      "DependsOnModIDs":[]
     },
     {
       "Chips":["7-SEGMENT","DOT DISPLAY","RGB DISPLAY","LED","RGBLED","Text Display"],
       "IsToggledOpen":false,
-      "Name":"DISPLAY"
+      "Name":"DISPLAY",
+      "DependsOnModIDs":[]
     },
     {
       "Chips":["ROM 256×x2x8","ROM 256×16","ROM 256×32","MEM-1","MEM-16","MEM-256","MEM-256-UNMODULAR","MEM-256-4bit","MEM-26-16Bit"],
-      "IsToggledOpen":true,
-      "Name":"MEMORY"
+      "IsToggledOpen":false,
+      "Name":"MEMORY",
+      "DependsOnModIDs":[]
     },
     {
       "Chips":["PORT-IN-1","PORT-IN-4","PORT-IN-8","PORT-IN-16","PORT-OUT-1","PORT-OUT-4","PORT-OUT-8","PORT-OUT-16"],
       "IsToggledOpen":false,
-      "Name":"PORTS"
+      "Name":"PORTS",
+      "DependsOnModIDs":[]
     },
     {
-      "Chips":["BUZZER","abc","input Chip","not","DELETE KEY CODE","RIGHT ARROW CODE","LEFT ARROW CODE","DOWN ARROW CODE","UP ARROW CODE","RETURN CODE","AND","OR","XOR","XNOR","check match 16 bit","D-Latch","2-bit decoder","POS KEYCODE","8 Bit Match Checker","main","Complex Internet Interface","16 3 state buff"],
+      "Chips":["BUZZER","abc","input Chip","not","DELETE KEY CODE","RIGHT ARROW CODE","LEFT ARROW CODE","DOWN ARROW CODE","UP ARROW CODE","RETURN CODE","AND","OR","XOR","XNOR","check match 16 bit","D-Latch","2-bit decoder","POS KEYCODE","8 Bit Match Checker","main","Complex Internet Interface","16 3 state buff","PASS","CONST","HUGE-LED"],
       "IsToggledOpen":true,
-      "Name":"OTHER"
+      "Name":"OTHER",
+      "DependsOnModIDs":[]
     }
   ]
 }
